@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Geschütztes Foto</title>
+<style>
+  body{font-family:system-ui,Segoe UI,Roboto,Arial;margin:2rem;background:#f7f7f8}
+  .box{max-width:420px;margin:1rem auto;padding:1rem;background:#fff;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.08);}
+  input{width:100%;padding:.6rem;margin:.5rem 0;border:1px solid #ddd;border-radius:6px}
+  button{padding:.6rem 1rem;border-radius:6px;background:#007bff;color:#fff;border:0}
+  img{max-width:100%;display:block;margin-top:1rem;border-radius:8px}
+</style>
+</head>
+<body>
+<div class="box">
+  <h2>Foto Freischalten</h2>
+  <p>Bitte Code eingeben:</p>
+  <input id="code" placeholder="4-stelliger Code" autocomplete="one-time-code"/>
+  <div style="text-align:right">
+    <button id="check">Freischalten</button>
+  </div>
+  <div id="result" aria-live="polite"></div>
+</div>
+
+<script>
+  // === Konfiguration ===
+  const SECRET = "1220"; // 🔑 Hier deinen Geheim-Code eintragen
+  const IMG_SRC = "test.jpg"; // 📸 Name deiner Bilddatei (liegt im gleichen Ordner)
+  // =====================
+
+  document.getElementById('check').addEventListener('click', tryCode);
+  document.getElementById('code').addEventListener('keyup', e => { if(e.key === 'Enter') tryCode(); });
+
+  function tryCode(){
+    const v = document.getElementById('code').value.trim();
+    const res = document.getElementById('result');
+    if(v === SECRET){
+      res.innerHTML = `<p style="color:green">Code korrekt — hier ist das Foto:</p><img src="${IMG_SRC}" alt="Geschütztes Foto">`;
+    } else {
+      res.innerHTML = `<p style="color:red">Falscher Code.</p>`;
+    }
+  }
+</script>
+</body>
+</html>
