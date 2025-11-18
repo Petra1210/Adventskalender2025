@@ -1,76 +1,114 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-<meta charset="UTF-8">
-<title>Fotos Freischalten</title>
+<meta charset="utf-8">
+<title>Fotos Freischalten - Mehrere Bilder</title>
 <style>
-  body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
+  body { font-family: Arial, sans-serif; text-align: center; margin: 40px; }
   input, button { padding: 10px; font-size: 16px; }
-  img { max-width: 90%; margin-top: 20px; display: none; }
-  #message { color: red; margin-top: 20px; }
+  #photoContainer { 
+    margin-top: 20px; 
+    display: flex; 
+    flex-wrap: wrap; 
+    justify-content: center; 
+    gap: 12px;
+  }
+  #photoContainer img {
+    max-width: 320px;
+    width: calc(45% - 12px);
+    height: auto;
+    border-radius: 6px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  }
+  @media (max-width: 600px) {
+    #photoContainer img { width: 100%; }
+  }
+  #message { color: red; margin-top: 12px; }
 </style>
 </head>
 <body>
 
 <h1>Foto Freischalten</h1>
-<p>Gib den Code ein, um dein Foto zu sehen:</p>
+<p>Gib den Code ein, um die zugeordneten Fotos zu sehen:</p>
 
 <input type="text" id="codeInput" placeholder="Code eingeben">
 <button onclick="checkCode()">Freischalten</button>
 
 <p id="message"></p>
-<img id="photo" src="" alt="Foto">
+<div id="photoContainer"></div>
 
 <script>
-  // Codes → Bilddateien
+  // Codes → Liste von Bilddateien (immer Arrays)
   const codes = {
-    "1220": "test.jpg",
-    "1234": "test2.jpg",
-    "3456": "bild3.jpg",
-    "4567": "bild4.jpg",
-    "5678": "bild5.jpg",
-    "6789": ["Foto6a.jpeg", "Foto6b.jpeg"],
-    "7890": "bild7.jpg",
-    "8901": "bild8.jpg",
-    "9012": "bild9.jpg",
-    "0123": "bild10.jpg",
-    "1111": "bild11.jpg",
-    "2222": "bild12.jpg",
-    "3333": "bild13.jpg",
-    "4444": "bild14.jpg",
-    "5555": "bild15.jpg",
-    "6666": "bild16.jpg",
-    "7777": "bild17.jpg",
-    "8888": "bild18.jpg",
-    "9999": "bild19.jpg",
-    "0000": "bild20.jpg",
-    "1212": "bild21.jpg",
-    "2323": "bild22.jpg",
-    "3434": "bild23.jpg",
-    "4545": "bild24.jpg"
+    "1220": ["test.jpg"],
+    "1234": ["test2.jpg"],
+    "3456": ["bild3.jpg"],
+    "4567": ["bild4.jpg", "bild4b.jpg"],
+    "5678": ["bild5.jpg"],
+    "6789": ["Foto6a.jpeg", "Foto6b.jpeg"],    // <-- zwei Bilder für 6789
+    "7890": ["bild7.jpg"],
+    "8901": ["bild8.jpg"],
+    "9012": ["bild9.jpg"],
+    "0123": ["bild10.jpg"],
+    "1111": ["bild11.jpg"],
+    "2222": ["bild12.jpg"],
+    "3333": ["bild13.jpg"],
+    "4444": ["bild14.jpg"],
+    "5555": ["bild15.jpg"],
+    "6666": ["bild16.jpg"],
+    "7777": ["bild17.jpg"],
+    "8888": ["bild18.jpg"],
+    "9999": ["bild19.jpg"],
+    "0000": ["bild20.jpg"],
+    "1212": ["bild21.jpg"],
+    "2323": ["bild22.jpg"],
+    "3434": ["bild23.jpg"],
+    "4545": ["bild24.jpg"]
   };
 
   function checkCode() {
-    const input = document.getElementById("codeInput").value;
-    const photo = document.getElementById("photo");
+    const raw = document.getElementById("codeInput").value;
+    const input = raw.trim();
+    const photoContainer = document.getElementById("photoContainer");
     const message = document.getElementById("message");
 
-    if (codes[input]) {
-      photo.src = codes[input];
-      photo.style.display = "block";
-      message.textContent = "";
+    // Container leeren
+    photoContainer.innerHTML = "";
+    message.textContent = "";
+
+    if (!input) {
+      message.textContent = "Bitte Code eingeben.";
+      return;
+    }
+
+    // Falls jemand versehentlich Strings statt Arrays eingetragen hat,
+    // wandeln wir es hier sicherheitshalber um.
+    if (codes.hasOwnProperty(input)) {
+      let imgs = codes[input];
+      if (!Array.isArray(imgs)) imgs = [imgs];
+
+      // Erstelle für jede Bilddatei ein <img> und hänge es an
+      imgs.forEach(src => {
+        const img = document.createElement("img");
+        img.src = src;
+        img.alt = "Foto: " + src;
+        // Fallback: falls Bild nicht gefunden wird, kleiner Hinweis
+        img.onerror = () => {
+          img.style.opacity = "0.6";
+          img.title = "Bild nicht gefunden: " + src;
+        };
+        photoContainer.appendChild(img);
+      });
     } else {
-      photo.style.display = "none";
       message.textContent = "Falscher Code!";
     }
   }
+
+  // Optional: Enter-Taste zum Auslösen
+  document.getElementById("codeInput").addEventListener("keydown", function(e){
+    if (e.key === "Enter") checkCode();
+  });
 </script>
 
 </body>
 </html>
-
-
-
-
-
-
